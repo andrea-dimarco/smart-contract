@@ -1,0 +1,5 @@
+- Study Smart contracts
+
+- Study Solidity
+
+- Study wtf do I have to do
