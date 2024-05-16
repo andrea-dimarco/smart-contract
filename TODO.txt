@@ -2,7 +2,5 @@
     - Test .sol scripts on Remix IDE
     - Solidity Code lesson 20
 
-- Study echidna
-
 
 - Study wtf do I have to do
