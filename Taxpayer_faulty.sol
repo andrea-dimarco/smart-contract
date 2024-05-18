@@ -32,7 +32,6 @@ contract Taxpayer {
         tax_allowance = DEFAULT_ALLOWANCE;
     } 
 
-
     // We require new_spouse != address(0);
     function marry(address new_spouse) public {
         spouse = new_spouse;
@@ -56,17 +55,23 @@ contract Taxpayer {
     function haveBirthday() public {
         age++;
     }
+    function getAge() public view returns (uint) {
+        return age;
+    }
 
     function setSpouse(address sp) public {
         spouse = sp;
     }
-    function getSpouse() public returns (address) {
+    function getSpouse() public view returns (address) {
         return spouse;
+    }
+    function getMaritalStatus() public view returns (bool) {
+        return isMarried;
     }
     function setTaxAllowance(uint ta) public {
         tax_allowance = ta;
     }
-    function getTaxAllowance() public returns (uint) {
+    function getTaxAllowance() public view returns (uint) {
         return tax_allowance;
     }
 }

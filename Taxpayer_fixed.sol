@@ -12,7 +12,7 @@ contract Taxpayer {
     address  private parent2; 
 
     /* Constant default income tax allowance */
-    uint constant  DEFAULT_ALLOWANCE = 5000;
+    uint constant DEFAULT_ALLOWANCE = 5000;
 
     /* Constant income tax allowance for Older Taxpayers over 65 */
     uint constant ALLOWANCE_OAP = 7000;
@@ -34,7 +34,7 @@ contract Taxpayer {
 
 
     function marry(address _spouse) public {
-        require(address(_spouse) != address(0x0)); // can't marry ghosts
+        require(address(_spouse) != address(0)); // can't marry ghosts
         require(_spouse != address(this)); // can't marry yourself
         Taxpayer sp = Taxpayer(_spouse);
         require((sp.getMaritalStatus() == false) && (isMarried == false)); // no polyamorous couples!
@@ -43,11 +43,10 @@ contract Taxpayer {
         isMarried = true;
         // them to me
         sp.setSpouse(address(this)); // get consent
-        assert(sp.getSpouse() == address(this));
     } /* marry */
     function setSpouse(address _spouse) public {
         /**
-         * This function must be called from iside _spouse.marry(address(this)).
+         * This function can only be called from iside _spouse.marry(address(this)).
          *  otherwise it won't work. This is the second part of the marriage,
          *  commonly known as consent.
          */
@@ -57,32 +56,51 @@ contract Taxpayer {
         spouse = _spouse;
         isMarried = true;
     } /* setSpouse */
- 
-
-    function divorce() public {
-        Taxpayer sp = Taxpayer(address(spouse));
-        sp.setSpouse(address(0));
-        spouse = address(0);
-        isMarried = false;
+    
+    
+    function getSpouse() public view returns (address) {
+        return spouse;
+    } /* getSpouse */
+    function getMaritalStatus() public view returns (bool) {
+        return isMarried;
     }
 
-    /* Transfer part of tax allowance to own spouse */
-    function transferAllowance(uint change) public {
-        tax_allowance = tax_allowance - change;
+    function divorce() public {
+        require(isMarried);
         Taxpayer sp = Taxpayer(address(spouse));
-        sp.setTaxAllowance(sp.getTaxAllowance()+change);
+        spouse = address(0);
+        isMarried = false;
+        if (age >= 65) {
+            setTaxAllowance(ALLOWANCE_OAP);
+        } else {
+            setTaxAllowance(DEFAULT_ALLOWANCE);
+        }
+        // partner must also divorce
+        if (sp.getMaritalStatus()) {
+            sp.divorce();
+        }
+    } /* divorce */
+
+
+    /* Transfer part of tax allowance to own spouse */
+    function transferAllowance(uint _change) public {
+        require(isMarried); // can only transfer to partner
+        require(tax_allowance >= _change); // can't transfer more than is owned
+        if (isMarried && (tax_allowance >= _change)) {
+            Taxpayer sp = Taxpayer(address(spouse));
+            sp.setTaxAllowance(sp.getTaxAllowance() + _change);
+            tax_allowance = tax_allowance - _change;
+        }
+    }
+
+    function getAge() public view returns (uint) {
+        return age;
     }
 
     function haveBirthday() public {
         age++;
     }
 
-    function getSpouse() public view returns (address) {
-        return spouse;
-    }
-    function getMaritalStatus() public view returns (bool) {
-        return isMarried;
-    }
     function setTaxAllowance(uint ta) public {
         tax_allowance = ta;
     }
