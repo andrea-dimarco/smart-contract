@@ -37,14 +37,14 @@ contract Taxpayer {
         spouse = new_spouse;
         isMarried = true;
     }
- 
+
     function divorce() public {
         Taxpayer sp = Taxpayer(address(spouse));
         sp.setSpouse(address(0));
         spouse = address(0);
         isMarried = false;
     }
-
+    
     /* Transfer part of tax allowance to own spouse */
     function transferAllowance(uint change) public {
         tax_allowance = tax_allowance - change;
@@ -55,6 +55,7 @@ contract Taxpayer {
     function haveBirthday() public {
         age++;
     }
+
     function getAge() public view returns (uint) {
         return age;
     }
@@ -62,15 +63,19 @@ contract Taxpayer {
     function setSpouse(address sp) public {
         spouse = sp;
     }
+
     function getSpouse() public view returns (address) {
         return spouse;
     }
+
     function getMaritalStatus() public view returns (bool) {
         return isMarried;
     }
+
     function setTaxAllowance(uint ta) public {
         tax_allowance = ta;
     }
+
     function getTaxAllowance() public view returns (uint) {
         return tax_allowance;
     }

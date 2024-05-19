@@ -37,19 +37,15 @@ contract Taxpayer {
         require(address(_spouse) != address(0)); // can't marry ghosts
         require(_spouse != address(this)); // can't marry yourself
         Taxpayer sp = Taxpayer(_spouse);
-        require((sp.getMaritalStatus() == false) && (isMarried == false)); // no polyamorous couples!
+        require((sp.getMaritalStatus() == false) && (isMarried == false)); // no multiple partners!
         // me to them
         spouse = address(_spouse);
         isMarried = true;
         // them to me
         sp.setSpouse(address(this)); // get consent
     } /* marry */
+
     function setSpouse(address _spouse) public {
-        /**
-         * This function can only be called from iside _spouse.marry(address(this)).
-         *  otherwise it won't work. This is the second part of the marriage,
-         *  commonly known as consent.
-         */
         require(isMarried == false);
         Taxpayer sp = Taxpayer(_spouse);
         require(sp.getSpouse() == address(this)); // can't marry without consent
@@ -86,11 +82,9 @@ contract Taxpayer {
     function transferAllowance(uint _change) public {
         require(isMarried); // can only transfer to partner
         require(tax_allowance >= _change); // can't transfer more than is owned
-        if (isMarried && (tax_allowance >= _change)) {
-            Taxpayer sp = Taxpayer(address(spouse));
-            sp.setTaxAllowance(sp.getTaxAllowance() + _change);
-            tax_allowance = tax_allowance - _change;
-        }
+        Taxpayer sp = Taxpayer(address(spouse));
+        sp.setTaxAllowance(sp.getTaxAllowance() + _change);
+        tax_allowance = tax_allowance - _change;
     }
 
     function getAge() public view returns (uint) {

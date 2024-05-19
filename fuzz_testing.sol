@@ -40,16 +40,11 @@ contract Fuzzer {
         all_citizens = [person_1, person_2, person_3];
     } /* constructor */
 
-    /* For every property P either:
-     *      (1) Fix the Taxpayer contract to satisfy P
-     *      (2) Add "require(...)" statements to prevent illegal executions
-     *      (3) Add invariant for another property that can help in the verification
-     */
-
 
     /**
      * P1: if x is married to y --> y is also be married (and) to x
      */
+
     function echidna_test_marriage() public view returns (bool) {
         Taxpayer husband;
         Taxpayer wife;
@@ -61,11 +56,12 @@ contract Fuzzer {
             husband = all_citizens[i];
             for (uint8 j = (i+1); j < all_citizens.length; j++) {
                 wife = all_citizens[j];
-                // logical implication
                     // (if married) --> (they must be each other's partner)
-                partner_condition = ( husband.getSpouse() != address(wife) ) || ( wife.getSpouse() == address(husband) );
+                partner_condition = ( husband.getSpouse() != address(wife) ) 
+                                        || ( wife.getSpouse() == address(husband) );
                     // (if married) --> (they must both be married)
-                ring_condition = ( husband.getSpouse() != address(wife) ) || ( husband.getMaritalStatus() && wife.getMaritalStatus() );
+                ring_condition = ( husband.getSpouse() != address(wife) )
+                                        || ( husband.getMaritalStatus() && wife.getMaritalStatus() );
                 property = partner_condition && ring_condition;
                 if (property == false) {
                     return false;
@@ -74,11 +70,15 @@ contract Fuzzer {
         }
         return true;
     } /* echidna_test_marriage */
+    
         /* These functions challenge P1 */
+    
     function marry(uint8 _p1, uint8 _p2) public {
         require(_p1 < all_citizens.length && _p2 <  all_citizens.length);
         all_citizens[_p1].marry(address(all_citizens[_p2]));
     } /* marry */
+    
+    
     function divorce(uint8 _p) public {
         require(_p < all_citizens.length); 
         all_citizens[_p].divorce();
@@ -97,6 +97,7 @@ contract Fuzzer {
       *    Add invariants that express these constraints, and, if necessary, fix/improve the code to ensure
       *    that they are not violated.
       */
+    
     function echidna_test_allowance_married() public returns (bool) {
         Taxpayer person;
         Taxpayer wife;
@@ -117,6 +118,7 @@ contract Fuzzer {
         }
         return true;
     }
+    
     function echidna_test_allowance_single() public returns (bool) {
         Taxpayer person;
         uint old_allowance = 0;
@@ -137,6 +139,7 @@ contract Fuzzer {
         }
         return true;
     }
+    
     function echidna_test_allowance_divorce() public returns (bool) {
         Taxpayer person;
         uint allowance;
@@ -156,7 +159,9 @@ contract Fuzzer {
         }
         return true;
     }
+    
         /* this function challenges P2-3 */
+    
     function agePerson(uint8 _p) public {
         require(_p < all_citizens.length);
         all_citizens[_p].haveBirthday();
