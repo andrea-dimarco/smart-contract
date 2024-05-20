@@ -77,6 +77,10 @@ contract Fuzzer {
         require(_p1 < all_citizens.length && _p2 <  all_citizens.length);
         all_citizens[_p1].marry(address(all_citizens[_p2]));
     } /* marry */
+    function set_spouse(uint8 _p1, uint8 _p2) public {
+        require(_p1 < all_citizens.length && _p2 <  all_citizens.length);
+        all_citizens[_p1].setSpouse(address(all_citizens[_p2]));
+    } /* marry */
     
     
     function divorce(uint8 _p) public {
@@ -151,6 +155,7 @@ contract Fuzzer {
                 } else {
                     allowance = DEFAULT_ALLOWANCE;
                 }
+
                 person.divorce();
                 if (person.getTaxAllowance() != allowance) {
                     return false;
@@ -161,7 +166,7 @@ contract Fuzzer {
     }
     
         /* this function challenges P2-3 */
-    
+
     function agePerson(uint8 _p) public {
         require(_p < all_citizens.length);
         all_citizens[_p].haveBirthday();
